@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizador de Criptomonedas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="main-container">
+        <h1>Cotizador de Criptomonedas</h1>
+        
+        <div id="image-container">
+            <img src="./undraw_currency-conversion_933g.png" alt="Criptomoneda" width="250px">
+        </div>
+
+        <div id="coin-container">
+            <form id="coin-form">
+                <!-- Selector de Moneda Fiduciaria -->
+                <div class="coin-input-container">
+                    <label for="coin">ELIGE TU MONEDA</label>
+                    <select class="coin-input" id="coin">
+                        <option selected disabled value="">Selecciona una moneda</option>
+                        <option value="USD">Dólar Estadounidense (USD)</option>
+                        <option value="EUR">Euro (EUR)</option>
+                        <option value="GBP">Libra Esterlina (GBP)</option>
+                    </select>
+                </div>
+
+                <!-- Selector de Criptomoneda -->
+                <div class="coin-input-container">
+                    <label for="crypto">ELIGE TU CRIPTOMONEDA</label>
+                    <select class="coin-input" id="crypto">
+                        <option selected disabled value="">Selecciona una criptomoneda</option>
+                        <option value="BTC">Bitcoin</option>
+                        <option value="ETH">Ethereum</option>
+                        <option value="AXS">AXS</option>
+                        <option value="BNB">Binance Coin</option>
+                    </select>
+                </div>
+
+                <!-- Monto a Cotizar -->
+                <div class="coin-input-container">
+                    <label for="amount">MONTO A INVERTIR</label>
+                    <input type="number" step="any" class="coin-input" id="amount" placeholder="Ej. 100">
+                </div>
+
+                <button id="form-btn" type="submit">COTIZAR</button>
+            </form>
+
+            <!-- Resultados -->
+            <div id="coin-info"></div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
