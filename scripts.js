@@ -23,19 +23,38 @@ form.addEventListener('submit', async (e) => {
     coinInfo.innerHTML = `<p class="loading">Consultando cotización...</p>`;
 
     try {
-        const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${cryptoSelected}&tsyms=${coinSelected}`;
-        const response = await fetch(url);
-        const data = await response.json();
+        // Binance utiliza USDT en lugar de USD para la mayoría de pares
+        const fiatSymbol = coinSelected === 'USD' ? 'USDT' : coinSelected;
+        const symbol = `${cryptoSelected}${fiatSymbol}`;
 
-        const displayData = data.DISPLAY[cryptoSelected][coinSelected];
-        const rawData = data.RAW[cryptoSelected][coinSelected];
+        // 1. Petición de precio actual y datos de 24 horas a Binance
+        const bitcoinPrice = await (await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`)).json();
+        const bitcoinHour = await (await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`)).json();
 
-        const price = displayData.PRICE;
-        const priceHigh = displayData.HIGH24HOUR;
-        const priceLow = displayData.LOW24HOUR;
-        const variation = displayData.CHANGEPCT24HOUR;
+        // Validar si Binance devolvió un error (ej. par no existente)
+        if (bitcoinPrice.code || bitcoinHour.code) {
+            coinInfo.innerHTML = `<p class="error">El par ${cryptoSelected}/${coinSelected} no está disponible en Binance.</p>`;
+            return;
+        }
 
-        // HTML base con la información técnica
+        // 2. Extracción y formateo de variables
+        const currentPriceNum = parseFloat(bitcoinPrice.price);
+        const highPriceNum = parseFloat(bitcoinHour.highPrice);
+        const lowPriceNum = parseFloat(bitcoinHour.lowPrice);
+        const variationNum = parseFloat(bitcoinHour.priceChangePercent);
+
+        // Formatear como moneda local
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: coinSelected
+        });
+
+        const price = formatter.format(currentPriceNum);
+        const priceHigh = formatter.format(highPriceNum);
+        const priceLow = formatter.format(lowPriceNum);
+        const variation = variationNum.toFixed(2);
+
+        // 3. HTML base con la información técnica
         let htmlContent = `
             <p class="info">El precio es: <span class="price">${price}</span></p>
             <p class="info">El precio más alto es: <span class="price">${priceHigh}</span></p>
@@ -43,9 +62,9 @@ form.addEventListener('submit', async (e) => {
             <p class="info">Variación 24H: <span class="price">${variation}%</span></p>
         `;
 
-        // Si se ingresó un monto, calcular cuántas criptomonedas puede comprar
+        // 4. Si se ingresó un monto, calcular cuántas criptomonedas puede comprar
         if (amountValue !== '' && Number(amountValue) > 0) {
-            const amountCrypto = (Number(amountValue) / rawData.PRICE).toFixed(6);
+            const amountCrypto = (Number(amountValue) / currentPriceNum).toFixed(6);
             htmlContent += `
                 <p class="info highlight">Puedes comprar: <span class="price">${amountCrypto} ${cryptoSelected}</span></p>
             `;

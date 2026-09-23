@@ -97,8 +97,11 @@ h1 {
 #coin-info {
     margin-top: 25px;
     padding-top: 15px;
-    border-top: 1px solid #233554;
     text-align: left;
+}
+
+#coin-info:has(*) {
+    border-top: 1px solid #233554;
 }
 
 .info {
@@ -109,7 +112,7 @@ h1 {
 
 .price {
     font-weight: bold;
-    color: #ffffff;
+    color: #64ffda;
 }
 
 .highlight {
